@@ -1,6 +1,7 @@
 #This file takes the 12 books, performs a character count, and produces a Huffman code for the aggregate of the 12 books.
 #We want our code to produce a minimum variance Huffman code): it just requires to sort super-symbol(s) higher than any symbol of equal (aggregate) probability.
 import os
+import sys
 
 def importFiles(filepath): #Note, this will read every file in the source directory.
     source = os.listdir(filepath)
@@ -29,12 +30,20 @@ def sortCharacters(characters):
     sortedCharacters = sorted(characters.items(), key=lambda x: (x[1], len(x[0])), reverse=True)
     return sortedCharacters
 
-def main():
-    filepath = "./books/"
+def main(bookFilepath):
+    filepath = bookFilepath
     texts = importFiles(filepath)
     characters = countCharacters(texts)
     sortedCharacters = sortCharacters(characters)
     print(sortedCharacters)
 
 if __name__ == "__main__":
-    main()
+
+    if len(sys.argv) != 2:
+        print("Usage: python huffCode.py <bookFilepath>")
+        sys.exit(1)
+    
+    #First argument is the filepath to the books, i.e "./books/"
+    bookFilepath = sys.argv[1]
+    
+    main(bookFilepath)
