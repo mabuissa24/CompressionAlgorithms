@@ -3,6 +3,23 @@ from huffCode import HuffmanCoding as hc
 import os
 import sys
 
+class CodeDoubleMap:
+    def __init__(self, codeArray: list):
+        self.reverseMap = {}
+        self.codeArray = codeArray
+        for i in range(len(codeArray)):
+            self.reverseMap[codeArray[i]] = i
+
+    def getSymbol(self, codeWord: int):
+        return self.codeArray[codeWord]
+
+    def getIntCodeWord(self, symbol):
+        try:
+            codeWord = self.reverseMap[symbol]
+            return codeWord
+        except KeyError:
+            return None
+
 def countDigrams(texts) -> Counter:
     diFreqs = Counter()
     for text in texts:
@@ -41,8 +58,8 @@ def computeCode(n, texts):
     # TODO: need to deal with edge case where len(most_common(numOfDiagrams)) < numOfDiagrams
     commonDigramsTuples = countDigrams(texts).most_common(numOfDigrams)
     assert len(commonDigramsTuples) == numOfDigrams, "TODO: need to deal with edge case where len(most_common(numOfDiagrams)) < numOfDiagrams"
-    commonDigrams = [dt[0] for dt in commonDigramsTuples]
-    commonDigrams = sorted(commonDigrams)
+
+    commonDigrams = sorted([dt[0] for dt in commonDigramsTuples])
     for i in range(numOfDigrams):
         code.append(commonDigrams[i])
     return code
