@@ -3,23 +3,6 @@ from huffCode import HuffmanCoding as hc
 import os
 import sys
 
-class CodeDoubleMap:
-    def __init__(self, codeArray: list):
-        self.reverseMap = {}
-        self.codeArray = codeArray
-        for i in range(len(codeArray)):
-            self.reverseMap[codeArray[i]] = i
-
-    def getSymbol(self, codeWord: int):
-        return self.codeArray[codeWord]
-
-    def getIntCodeWord(self, symbol):
-        try:
-            codeWord = self.reverseMap[symbol]
-            return codeWord
-        except KeyError:
-            return None
-
 def countDigrams(texts) -> Counter:
     diFreqs = Counter()
     for text in texts:
@@ -69,6 +52,12 @@ def bitsRequired(n):
 
 def getBin(n: int, numOfBits: int):
     return bin(n)[2:].zfill(numOfBits)
+
+def hardBooksCode():
+    path = "./books/"
+    texts = hc.importFiles(path)
+    return computeCode(256, texts)
+
 
 if __name__ == "__main__":
     if len(sys.argv) != 3:
