@@ -27,8 +27,11 @@ class HuffmanCoding:
         for text in texts:
             for character in text:
                 #Exclude non-printable characters
+
                 if ord(character) < 32 or ord(character) > 126:
-                    continue
+                    if ord(character) != 9 and ord(character)!=10:
+                        print(character, ord(character))
+                        continue
 
                 if character not in characters:
                     newNode = Node(character, 1)
@@ -99,6 +102,10 @@ class HuffmanCoding:
         for character in charToCode:
             if character == " ":
                 print("space", "\t", charToCode[character])
+            elif ord(character) == 10:
+                print("\\n", "\t", charToCode[character])
+            elif ord(character) == 9:
+                print("tab", "\t", charToCode[character])
             else:
                 print(character, "\t", charToCode[character])
 
