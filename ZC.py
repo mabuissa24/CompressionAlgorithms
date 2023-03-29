@@ -8,35 +8,50 @@
 import sys
 
 
+def encode(dictionary, text):
+    # Initialize dict_ind to size of dictionary, start with codes of size 7
+    dict_ind = len(dictionary) + 1
+    num_bits = 7
+    # Iterate through the characters in the file and encode them
+    i = 0
+    code = ""
+    while i < len(text):
+        # Look for the longest string of characters already in dictionary
+        string = text[i]
+        j = i + 1
+        while j < len(text):
+            new_string = string + text[j]
+            # If new string is already in the dictionary, update the string to continue searching
+            if new_string in dictionary:
+                string = new_string
+                j += 1
+            # Once we find something not in the dictionary, add it to dictionary and break
+            else:
+                dictionary[new_string] = dict_ind
+                dict_ind += 1
+                break
+
+        # Add index from dictionary to the code, represented by correct number of bits
+        ind = dictionary[string]
+        binary_code = format(ind, "b").zfill(num_bits)
+        code += binary_code
+
+        # Update i to point to the last not encoded letter
+        i = j
+
+    return code
+
+
 def main(filename):
-    # Dictionary starts with 96 ASCII characters
+    # Dictionary starts with 96 ASCII characters, represented by 7 bits
     dictionary = {chr(i): i - 31 for i in range(32, 128)}
-    dict_ind = 127
 
     # Read the file as one string
     with open("" + filename, "r", encoding='utf-8') as f:
         text = f.read()
 
-    # Iterate through the characters in the file and encode
-    i = 0
-    while i < len(text):
-        j = i
-        # Look for the longest string of characters already in dictionary
-        string = text[i]
-        while j < len(text):
-            # If we find something not in the dictionary, add it and return its code
-            if string + text[j] not in dictionary:
-                dictionary[string + text[j]] = dict_ind
-                dict_ind += 1
-                code = dictionary[string]
-                # Add code represented by correct number of bits
-
-            else:  # Otherwise, add the character to the string that we can transmit
-                string = string + text[j]
-
-        # Build dictionary with the max string found + next char
-        return
-    return
+    # Return the encoded version of text
+    return encode(dictionary, text)
 
 
 if __name__ == "__main__":
