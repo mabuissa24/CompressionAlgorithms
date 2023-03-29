@@ -4,7 +4,7 @@
 # adds one more entry to the dictionary that includes the entry just used concat with the next char.
 # Once the dict is full (max #bits = 16) it will monitor compression rate and when it dips below
 # a certain threshold it'll flush the dictionary and rebuild it
-
+import math
 import sys
 
 
@@ -38,6 +38,12 @@ def encode(dictionary, text):
 
         # Update i to point to the last not encoded letter
         i = j
+
+        # If dict_ind goes above 2^num_bits, update numbits
+        if dict_ind >= math.pow(2, num_bits):
+            num_bits += 1
+
+        # TODO: Monitor compression rate, flush dictionary and send code 0 if it gets too low
 
     return code
 
