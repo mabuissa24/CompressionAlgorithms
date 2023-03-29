@@ -39,12 +39,23 @@ def digr_encoder(text, cdm : CodeDoubleMap) -> bs.BitArray:
             if unigramCodeword: # only encode if it's a printable unigram
                 encodedMsg += "0b" + dc.getBin(unigramCodeword, cdm.codewordLen)
             i += 1
+    assert len(encodedMsg) % cdm.codewordLen == 0, "length of encoded message should be k * codewordLen long"
     return encodedMsg
 
+
+def digr_decoder(bitarr: bs.BitArray, cdm : CodeDoubleMap) -> str:
+    decodedMsg = []
+    for i in range(0, len(bitarr), cdm.codewordLen):
+        decodedMsg.append(cdm.getSymbol(bitarr[i:i + cdm.codewordLen].int))
+    return ''.join(decodedMsg)
 
 if __name__ == "__main__":
     code = dc.hardBooksCode()
     cdm = CodeDoubleMap(code)
     encodedMsg = digr_encoder(TEXT, cdm)
+    print("Encoded mssg")
     print(encodedMsg)
+
+    print("Decoded msg")
+    print(digr_decoder(encodedMsg, cdm))
        
