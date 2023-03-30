@@ -91,21 +91,51 @@ def hardBooksCode():
     texts = hc.importFiles(path)
     return computeCode(256, texts)
 
+ 
+
+
 
 if __name__ == "__main__":
-    if len(sys.argv) != 3:
-        print("Usage: python digrCode.py <numberOfEntries> <bookFilepath>")
+    if len(sys.argv) != 3 and len(sys.argv) != 4:
+        print("Usage: python digrCode.py <numberOfEntries> <bookFilepath> [writeToFileBool]")
         sys.exit(1)
+
+    writeToFile = False
+    if len(sys.argv) == 4:
+        if sys.argv[3] == "True":
+            writeToFile = True
+        elif sys.argv[3] == "False":
+            writeToFile = False
+        else:
+            print("Usage: python digrCode.py <numberOfEntries> <bookFilepath> [writeToFileBool]")
+            print("Note that [writeToFileBool] should be either 'True' or 'False'")
+            sys.exit(1)
 
     n = int(sys.argv[1])
     if n < 96:
         print("Number of entries in dictionary must be >= 96")
         sys.exit(1)
-
+    
     texts = hc.importFiles(sys.argv[2])
     code = computeCode(n, texts)
-    numOfBits = bitsRequired(n-1)
-    for i in range(len(code)):
+    m = len(code)
+    fullCode = True if (m==n) else False
+    numOfBits = bitsRequired(m-1)
+
+    codeFile = None
+    if writeToFile:
+        if not os.path.exists('digrCodes'):
+            os.makedirs('digrCodes')
+        codeFile = open(f"digrCodes/digrCode{m}.txt", "w")
+    
+    for i in range(m):
+        if codeFile:
+            codeFile.write(f"{getBin(i, numOfBits)}\t{code[i]}\n")
         print(f"{getBin(i, numOfBits)}\t{code[i]}")
+    if not fullCode:
+        print(f"WARNING: not enough digrams to construct a {n}-element code.\n")
+    if codeFile:
+        print(f"Output written on digrCodes/digrCode{m}.txt")
+    
  
     
