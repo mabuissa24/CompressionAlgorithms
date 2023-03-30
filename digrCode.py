@@ -51,22 +51,25 @@ def computeCode(n : int, texts: list) -> list:
     code word with an index and the number of entries in the code.
     """
 
+    if n < 96:
+        raise Exception("Code must be at least n=96 entries long!")
+
     code = [] # unigrams/digrams are indexed by binary symbols
     for i in range(96):
-        pAsc = i + 32
-        code.append(chr(pAsc))
+        printableUnigram = i + 32
+        code.append(chr(printableUnigram))
 
     if n == 96:
         return code
-    numOfDigrams = n - 96 # number of digrams in our alphabet
-
-    # TODO: need to deal with edge case where len(most_common(numOfDiagrams)) < numOfDiagrams
+    
+    numOfDigrams = n - 96 # number of digrams we would LIKE in our alphabet
     commonDigramsTuples = countDigrams(texts).most_common(numOfDigrams)
-    assert len(commonDigramsTuples) == numOfDigrams, "TODO: need to deal with edge case where len(most_common(numOfDiagrams)) < numOfDiagrams"
+    # note that there might not be enough digrams to fill out all n entries of code!
+    # In this case, len(commonDigramTuples) < n- 96 and we return a shorter code.
 
     commonDigrams = sorted([dt[0] for dt in commonDigramsTuples])
-    for i in range(numOfDigrams):
-        code.append(commonDigrams[i])
+    for cd in commonDigrams:
+        code.append(cd)
     return code
 
 def bitsRequired(n : int):
