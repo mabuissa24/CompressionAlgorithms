@@ -9,9 +9,9 @@ import sys
 
 
 def encode(dictionary, text):
-    # Initialize dict_ind to size of dictionary, start with codes of size 7
+    # Initialize dict_ind to size of dictionary, start with codes of minimum possible size
     dict_ind = len(dictionary) + 1
-    num_bits = 7
+    num_bits = math.ceil(math.log(dict_ind, 2))
     # Iterate through the characters in the file and encode them
     i = 0
     code = ""
@@ -43,7 +43,7 @@ def encode(dictionary, text):
         if dict_ind >= math.pow(2, num_bits):
             num_bits += 1
 
-        # TODO: Monitor compression rate, flush dictionary and send code 0 if it gets too low
+        # TODO: Once we reach 16 bits, stop adding, flush dictionary and send code 0 if it compression rate too low
 
     return code
 
