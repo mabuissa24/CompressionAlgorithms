@@ -8,20 +8,22 @@ def Z_test_encode():
     # Just one character
     unencoded = "a"
     encoded = ZC.encode(dictionary.copy(), unencoded)
-    correct = "0000010"
+    correct = "010"
     assert encoded == correct, f"Encoded \"{unencoded}\" as {encoded} instead of {correct}"
 
     # Multiple characters, no repetition
     unencoded = "wa "
     encoded = ZC.encode(dictionary.copy(), unencoded)
-    correct = "000010100000100000001"
+    correct = "1010100001"
     assert encoded == correct, f"Encoded \"{unencoded}\" as {encoded} instead of {correct}"
 
     # Multiple characters with repetition
     unencoded = "wabba wabba wabba wabba woo woo woo"
     encoded = ZC.encode(dictionary.copy(), unencoded)
     correct_list = [5, 2, 3, 3, 2, 1, 6, 8, 10, 12, 9, 11, 7, 16, 5, 4, 4, 11, 21, 23, 4]
-    correct_list_binary = [format(x, "b").zfill(7) for x in correct_list]
+    correct_list_binary = [format(x, "b").zfill(3) for x in correct_list[:2]]
+    correct_list_binary += [format(x, "b").zfill(4) for x in correct_list[2:10]]
+    correct_list_binary += [format(x, "b").zfill(5) for x in correct_list[10:]]
     correct = "".join(correct_list_binary)
     assert encoded == correct, f"Encoded \"{unencoded}\" as {encoded} instead of {correct}"
 
@@ -29,11 +31,13 @@ def Z_test_encode():
 def test_decode(algo):
     match algo:
         case "Z":
-            print("Testing algorithm Z decoder, to be implemented")
-            encoded = None
-            decoded = None
-            # correct = "wabba wabba wabba wabba woo woo woo"
-            # assert decoded == correct, f"Decoded {decoded} instead of {correct}"
+            encode_dictionary = {" ": 1, "a": 2, "b": 3, "o": 4, "w": 5}
+            decode_dictionary = {1: " ", 2: "a", 3: "b", 4: "o", 5: "w"}
+            unencoded = "waw"
+            encoded = ZC.encode(encode_dictionary.copy(), unencoded)
+            decoded = ZD.decode(decode_dictionary.copy(), encoded)
+            # print(f"decoded is {decoded} and unencoded is {unencoded}")
+            assert decoded == unencoded, f"Decoded {decoded} instead of {unencoded}"
         case "digrXXX":
             encoded = None
         case "huff":
