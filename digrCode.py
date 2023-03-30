@@ -3,7 +3,17 @@ from huffCode import HuffmanCoding as hc
 import os
 import sys
 
-def countDigrams(texts) -> Counter:
+def countDigrams(texts: list) -> Counter:
+    """
+    @param
+    texts: list of strings
+
+    Counts the number of digrams in texts.
+    Only counts printable digrams.
+
+    @return
+    diFreqs: Counter() object of digrams
+    """
     diFreqs = Counter()
     for text in texts:
         for i in range(len(text) - 1): # note the len(text) - 1 to avoid index error
@@ -13,22 +23,34 @@ def countDigrams(texts) -> Counter:
 
     return diFreqs
 
-def countUnigrams(texts) -> Counter:
-    uniFreqs = Counter()
-    for text in texts:
-        for u in text:
-            if ord(u) >= 32 and ord(u) <= 126:
-                uniFreqs[u] += 1
-    print(uniFreqs)
-    return uniFreqs
-
 def isPrintable(text) -> bool:
+    """
+    Determines if a text contains only printable characters.
+    """
     for c in text:
         if ord(c) < 32 or ord(c) > 126:
             return False
     return True
 
-def computeCode(n, texts):
+def computeCode(n : int, texts: list) -> list:
+    """
+    @param
+    n : number of entries in code.
+    texts: list of strings
+
+    Computes a code structured as follows:
+    First 96 entries: printable unigrams
+    Rest of the entries: most common n - 96 digrams in ascending order
+
+    @return
+
+    code : list
+
+    Note that we return a list instead of a dictionary because all codewords
+    are of the same length. As such, we can compute the appropriate binary
+    code word with an index and the number of entries in the code.
+    """
+
     code = [] # unigrams/digrams are indexed by binary symbols
     for i in range(96):
         pAsc = i + 32
@@ -47,10 +69,18 @@ def computeCode(n, texts):
         code.append(commonDigrams[i])
     return code
 
-def bitsRequired(n):
+def bitsRequired(n : int):
+    """
+    Number of bits needed to represent an int n
+    in binary
+    """
     return len(bin(n)[2:])
 
 def getBin(n: int, numOfBits: int):
+    """
+    Get binary representation of n using numOfBits bits.
+    Does not test whether numOfBits are enough bits.
+    """
     return bin(n)[2:].zfill(numOfBits)
 
 def hardBooksCode():
