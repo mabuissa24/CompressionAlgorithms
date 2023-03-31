@@ -86,11 +86,6 @@ def getBin(n: int, numOfBits: int):
     """
     return bin(n)[2:].zfill(numOfBits)
 
-def hardBooksCode():
-    path = "./books/"
-    texts = hc.importFiles(path)
-    return computeCode(256, texts)
-
 if __name__ == "__main__":
     if len(sys.argv) != 3 and len(sys.argv) != 4:
         print("Usage: python digrCode.py <numberOfEntries> <bookFilepath> [writeToFileBool]")
