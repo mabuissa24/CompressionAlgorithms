@@ -21,7 +21,22 @@ class CodeDoubleMap:
         except KeyError:
             return None
 
-def digr_encoder(text, cdm : CodeDoubleMap) -> bs.BitArray:
+def read_code(filename):
+    """
+    Reads a file, constructs a codeArray out of it.
+    Note that we only need the symbols, as the codewords are
+    ordered.
+    """
+    codeArray = []
+    f = open(filename, 'r')
+    for line in f:
+        symbolAndNewline = line.split('\t')[1]
+        symbol = symbolAndNewline[0:len(symbolAndNewline)-1]
+        codeArray.append(symbol)
+    return codeArray
+        
+
+def digr_compressor(text, cdm : CodeDoubleMap) -> bs.BitArray:
     encodedMsg = bs.BitArray()
     i = 0
     while i < len(text):
@@ -43,19 +58,22 @@ def digr_encoder(text, cdm : CodeDoubleMap) -> bs.BitArray:
     return encodedMsg
 
 
-def digr_decoder(bitarr: bs.BitArray, cdm : CodeDoubleMap) -> str:
+def digr_decompressor(bitarr: bs.BitArray, cdm : CodeDoubleMap) -> str:
     decodedMsg = []
     for i in range(0, len(bitarr), cdm.codewordLen):
         decodedMsg.append(cdm.getSymbol(bitarr[i:i + cdm.codewordLen].int))
     return ''.join(decodedMsg)
 
 if __name__ == "__main__":
-    code = dc.hardBooksCode()
-    cdm = CodeDoubleMap(code)
-    encodedMsg = digr_encoder(TEXT, cdm)
-    print("Encoded mssg")
-    print(encodedMsg)
+    # code = dc.hardBooksCode()
+    # cdm = CodeDoubleMap(code)
+    # encodedMsg = digr_compressor(TEXT, cdm)
+    # print("Encoded mssg")
+    # print(encodedMsg)
 
-    print("Decoded msg")
-    print(digr_decoder(encodedMsg, cdm))
+    # print("Decoded msg")
+    # print(digr_decompressor(encodedMsg, cdm))
+    code = read_code("digrCodes/digrCode1024.txt")
+    print(code)
+    print(len(code))
        

@@ -91,10 +91,6 @@ def hardBooksCode():
     texts = hc.importFiles(path)
     return computeCode(256, texts)
 
- 
-
-
-
 if __name__ == "__main__":
     if len(sys.argv) != 3 and len(sys.argv) != 4:
         print("Usage: python digrCode.py <numberOfEntries> <bookFilepath> [writeToFileBool]")
