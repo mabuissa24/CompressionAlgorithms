@@ -2,13 +2,20 @@ import bitstring as bs
 import digrCode as dc
 import os
 
-TEXT = "The United States had a thriving space station consisting of two main structures; the North Tower and the South Tower, each filled with Crewmates going about their daily tasks. However, a group of Impostors disguised as Crewmates, had infiltrated the station and were plotting to cause chaos. On one fateful day, the Impostors hijacked two spacecrafts and piloted them towards the two towers. The Crewmates on the ground watched in horror as the spacecrafts crashed into the towers, causing massive explosions and fires. The Crewmates in the towers scrambled to evacuate, but many were trapped as the buildings began to collapse. Emergency Crewmates, including firefighters and medical personnel, rushed to the scene to help their colleagues and put out the fires and complete tasks. Among U.S catastrophes, this was the most devastating in history, with thousands of innocent Crewmates losing their lives. The United States vowed to find those responsible for the attack, and to eject them. They issued an emergency meeting and began to track down the Impostors who had carried out the horrific act of violence."
-
 class CodeDoubleMap:
+    """
+    A double dictionary of sorts, used to index into both codewords and symbols
+    """
     def __init__(self, codeArray: list):
-        self.reverseMap = {}
+        """
+        @param
+        codeArray : list -> code in list form (each entry is a symbol, indices of list represent codewords.
+
+        Constructs reverseMap (symbols -> int codewords) from codeArray.
+        """
+        self.reverseMap = {} # keys: symbols; values: int codewords
         self.codeArray = codeArray
-        self.codewordLen = dc.bitsRequired(len(codeArray) - 1)
+        self.codewordLen = dc.bitsRequired(len(codeArray) - 1) # number of bits per codeword
         for i in range(len(codeArray)):
             self.reverseMap[codeArray[i]] = i
 
@@ -16,54 +23,107 @@ class CodeDoubleMap:
         return self.codeArray[codeWord]
 
     def getIntCodeword(self, symbol):
+        """
+        Get int codeword. 
+        """
         try:
             codeWord = self.reverseMap[symbol]
             return codeWord
         except KeyError:
             return None
 
-
 class DigramCompression:
+    """
+    Main tool used for digram compression and decompression.
+    """
     def __init__(self, codeSize: int):
+        """
+        @param
+        codeSize -> only supports 256, 512, and 1024
+        
+        Loads a code from directory './digrCodes/' and constructs a CodeDoubleMap  object out of it.
+        """
         sizes = [256, 512, 1024]
         if codeSize not in sizes:
             raise Exception("Code sizes other than 256, 512, 1024 are not supported")
-        code = self.read_code(f"digrCode{codeSize}.txt")
-        self.cdm = CodeDoubleMap(code)
+        codeFilenameWithPath = f"digrCodes/digrCode{codeSize}.txt"
+        codeArray = self.read_code(codeFilenameWithPath)
+        if not codeArray:
+            raise Exception(f"{codeFilenameWithPath} not found. Use 'digrcode.py' to construct code.")
+        self.cdm = CodeDoubleMap(codeArray)
 
-    def compressAndWrite(self, filename : str):
-        fileToCompress = open(filename, "r")
+    def compressAndWrite(self, filename : str, path : str):
+        """
+        @param
+        filename -> ONLY filename, no path
+        path -> path to file
+
+        Calls digr_encoder() to compress a file and write it to a binary file
+        """
+
+        fileToCompress = open(f'{path}{filename}', "r")
         text = fileToCompress.read()
+        # main call
         encodedBits = self.digr_encoder(text, self.cdm)
         
         if not os.path.exists('encodings'):
             os.makedirs('encodings')
-        with open(f'encodings/{filename}.digr', 'wb') as binaryFile:
+            print("Created directory './encodings/'")
+        binFileName = f'encodings/{filename}.digr'
+        with open(binFileName, 'wb') as binaryFile:
             encodedBits.tofile(binaryFile)
+        print(f"Compressed file written to {binFileName}")
 
-    def decompressAndWrite(self, filename: str):
-        compressedFile = open(f'{filename}.digr', "rb")
+    def decompressAndWrite(self, filename: str, path: str):
+        """
+        @param
+        filename -> ONLY filename, no path
+        path -> path to file
+
+        Calls digr_encoder() to decompress a binary file and write it to a text file
+        """
+        compressedFile = open(f'{path}{filename}.digr', "rb")
         bitString = bs.Bits(compressedFile)
-        decodedText = self.digr_decoder(bitString)
+        # main call
+        decodedText = self.digr_decoder(bitString , self.cdm)
 
         if not os.path.exists('decodings'):
             os.makedirs('decodings')
-        with open(f'decodings/{filename}.txt', 'w') as decompressedFile:
+            print("Created directory './decodings/'")
+        decompressedFilename = f'decodings/{filename}'
+        with open(decompressedFilename, 'w') as decompressedFile:
             decompressedFile.write(decodedText)
+        print(f"Decompressed file written to {decompressedFilename}")
 
     def digr_encoder(self, text : str, cdm : CodeDoubleMap) -> bs.BitArray:
+        """
+        @param
+        text -> String we want to encode
+        cdm -> the code we are using to encode
+
+        @return
+        encodedMsg -> compressed bitstring (in BitArray format)
+
+        Uses digram encoding to compress a text file
+
+        Algorithm:
+        Read text file a digram at a time. 
+        If digram is in our code, add the appopriate codeword to the encodedMsg. Continue to read the next digram
+        If it isn't, add the codeword for the unigram at the current index to encodedMsg. Continue to read digram after the aforementioned unigram.
+        """
         encodedMsg = bs.BitArray()
         i = 0
+
         while i < len(text):
             if i == len(text) - 1: # no digram left to read
                 digramCodeword = None 
             else:
                 input = text[i:i+2]
                 digramCodeword = cdm.getIntCodeword(input)
-            if digramCodeword: # encode digram
+            if digramCodeword: # if the digram is in our code, encode digram
                 encodedMsg += "0b" + dc.getBin(digramCodeword, cdm.codewordLen)
                 i += 2
-            else: # encode unigram
+            else: # if the digram is not in our code, encode the unigram
                 input = text[i]
                 unigramCodeword = cdm.getIntCodeword(input)
                 if unigramCodeword: # only encode if it's a printable unigram
@@ -73,22 +133,41 @@ class DigramCompression:
         return encodedMsg
 
     def digr_decoder(self, bitStr: bs.Bits, cdm : CodeDoubleMap) -> str:
+        """
+        Since all code words are the same length, simply read cdm.codeWordLen number of bits at a time
+        @param:
+        bitStr: bs.Bits -> bit string
+        cdm -> CodeDoubleMap
+
+        @return
+        decodedMsg : str -> String of decoded text
+        """
         decodedMsg = []
         for i in range(0, len(bitStr), cdm.codewordLen):
-            decodedMsg.append(cdm.getSymbol(bitStr[i:i + cdm.codewordLen].int))
+            intCodeword = bitStr[i:i + cdm.codewordLen].int
+            decodedMsg.append(cdm.getSymbol(intCodeword))
         return ''.join(decodedMsg)
     
-    def read_code(self, filename):
+    def read_code(self, filenameWithPath):
         """
-        Reads a file, constructs a codeArray out of it.
+        @param
+        filenameWithPath : list -> must end with '.digr'
+        @return
+        codeArray : list -> if codeFile is found
+        None ->  otherwise
+
+        Reads a digrCodefile, constructs a codeArray out of it.
         Note that we only need the symbols, as the codewords are
         ordered.
         """
-        codeArray = []
-        f = open(filename, 'r')
-        for line in f:
-            symbolAndNewline = line.split('\t')[1]
-            symbol = symbolAndNewline[0:len(symbolAndNewline)-1]
-            codeArray.append(symbol)
-        return codeArray
+        try:
+            codeArray = []
+            f = open(filenameWithPath, 'r')
+            for line in f:
+                symbolAndNewline = line.split('\t')[1]
+                symbol = symbolAndNewline[0:len(symbolAndNewline)-1]
+                codeArray.append(symbol)
+            return codeArray
+        except FileNotFoundError:
+            return None
     
