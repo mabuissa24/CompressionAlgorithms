@@ -1,5 +1,4 @@
 from digrXXX import DigramCompression
-import os
 import sys
 
 if __name__ == "__main__":
