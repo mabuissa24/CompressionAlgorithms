@@ -16,7 +16,7 @@ def countDigrams(texts: list) -> Counter:
     """
     diFreqs = Counter()
     for text in texts:
-        for i in range(len(text) - 1): # note the len(text) - 1 to avoid index error
+        for i in range(len(text) - 1): # note the len(text) - 1 to avoid trying to access an out of bounds digram
             d = text[i:i+2]
             if isPrintable(d):
                 diFreqs[d] += 1
@@ -32,35 +32,31 @@ def isPrintable(text) -> bool:
             return False
     return True
 
-def computeCode(n : int, texts: list) -> list:
+def computeCodeArray(n : int, texts: list) -> list:
     """
     @param
-    n : number of entries in code.
-    texts: list of strings
+    n -> number of entries in code.
+    texts -> list of strings
+    @return
+    codeArray : list
 
-    Computes a code structured as follows:
+    Computes a codeArray structured as follows:
     First 96 entries: printable unigrams
     Rest of the entries: most common n - 96 digrams in ascending order
 
-    @return
-
-    code : list
-
-    Note that we return a list instead of a dictionary because all codewords
-    are of the same length. As such, we can compute the appropriate binary
-    code word with an index and the number of entries in the code.
+    Note that we return a list instead of a dictionary for our code because all codewords are the same length. As such, we can compute the appropriate binary codeword with an index and the number of entries in the code.
     """
 
     if n < 96:
         raise Exception("Code must be at least n=96 entries long!")
 
-    code = [] # unigrams/digrams are indexed by binary symbols
+    codeArray = [] # unigrams/digrams are indexed by binary symbols
     for i in range(96):
         printableUnigram = i + 32
-        code.append(chr(printableUnigram))
+        codeArray.append(chr(printableUnigram))
 
     if n == 96:
-        return code
+        return codeArray
     
     numOfDigrams = n - 96 # number of digrams we would LIKE in our alphabet
     commonDigramsTuples = countDigrams(texts).most_common(numOfDigrams)
@@ -69,8 +65,8 @@ def computeCode(n : int, texts: list) -> list:
 
     commonDigrams = sorted([dt[0] for dt in commonDigramsTuples])
     for cd in commonDigrams:
-        code.append(cd)
-    return code
+        codeArray.append(cd)
+    return codeArray
 
 def bitsRequired(n : int):
     """
@@ -91,8 +87,10 @@ if __name__ == "__main__":
         print("Usage: python digrCode.py <numberOfEntries> <bookFilepath> [writeToFileBool]")
         sys.exit(1)
 
+    # give the option to write computed code to a file
     writeToFile = False
     if len(sys.argv) == 4:
+        # hardCode True or False values for writeToFileBool
         if sys.argv[3] == "True":
             writeToFile = True
         elif sys.argv[3] == "False":
@@ -108,9 +106,9 @@ if __name__ == "__main__":
         sys.exit(1)
     
     texts = hc.importFiles(sys.argv[2])
-    code = computeCode(n, texts)
-    m = len(code)
-    fullCode = True if (m==n) else False
+    codeArray = computeCodeArray(n, texts)
+    m = len(codeArray)
+    isFullCode = True if (m==n) else False     # for edge case where there are not enough digrams to construct an n-element code
     numOfBits = bitsRequired(m-1)
 
     codeFile = None
@@ -121,9 +119,9 @@ if __name__ == "__main__":
     
     for i in range(m):
         if codeFile:
-            codeFile.write(f"{getBin(i, numOfBits)}\t{code[i]}\n")
-        print(f"{getBin(i, numOfBits)}\t{code[i]}")
-    if not fullCode:
+            codeFile.write(f"{getBin(i, numOfBits)}\t{codeArray[i]}\n")
+        print(f"{getBin(i, numOfBits)}\t{codeArray[i]}")
+    if not isFullCode:
         print(f"WARNING: not enough digrams to construct a {n}-element code.\n")
     if codeFile:
         print(f"Output written on digrCodes/digrCode{m}.txt")
