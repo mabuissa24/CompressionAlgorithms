@@ -34,7 +34,7 @@ def compressFile(filepath, dictionary):
 
     filename = filepath.split("/")[-1]
     #Create a binary file
-    file = open("./encodings/" + filename+ ".huff", "wb")
+    file = open("./encodings/huff/" + filename+ ".huff", "wb")
 
 
     #Encode the file

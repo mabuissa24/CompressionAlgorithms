@@ -59,7 +59,7 @@ def decodeFile(dictionary, filepath):
     #Convert the list of characters to a string
     text = "".join(text)
 
-    filename = "./decodings/" + filepath.split("/")[-1].removesuffix(".huff")
+    filename = "./decodings/huff/" + filepath.split("/")[-1].removesuffix(".huff")
 
     #If the file already exists, overwrite it
     if os.path.exists(filename):
