@@ -27,12 +27,41 @@ class HuffmanCoding:
         for text in texts:
             for character in text:
                 #Exclude non-printable characters
-
-                if ord(character) < 32 or ord(character) > 126:
-                    if ord(character) != 9 and ord(character)!=10:
-                        print(character, ord(character))
-                        continue
-
+                boolean = ord(character) < 33 or ord(character) > 126 and ord(character)
+                if boolean:
+                    #Switch statement to map utf-8 characters onto their ascii equivalents
+                    match ord(character):
+                        case 32:
+                            character = "space"
+                        case 9:
+                            character = "tab"
+                        case 10:
+                            character = "\\n"
+                        case 8217:
+                            character = "'"
+                        case 8216:
+                            character = "'"
+                        case 8211:
+                            character = "-"
+                        case 8220:
+                            character = '"'
+                        case 8221:
+                            character = '"'
+                        case 8212:
+                            character = "-"
+                        case 250:
+                            character = "u"
+                        case 233:
+                            character = "e"
+                        case 237:
+                            character = "i"
+                        case 243:
+                            character = "o"
+                        case 225:
+                            character = "a"
+                        case _:
+                            continue
+                    
                 if character not in characters:
                     newNode = Node(character, 1)
                     characters[character] = newNode
@@ -96,18 +125,11 @@ class HuffmanCoding:
         #Convert the Huffman code to a dictionary
         charToCode = self.charToCode(huffmanCode)
 
-        #Sort the dictionary by utf-8 code
-        charToCode = dict(sorted(charToCode.items(), key=lambda x: ord(x[0])))
+        #Sort the dictionary by utf-8 code, remember to convert space, tab, and newline to their utf-8 codes. (i.e "space" -> "32")
+        charToCode = dict(sorted(charToCode.items(), key=lambda x: 9 if x[0] == "tab" else 10 if x[0] == "\\n" else 32 if x[0] == "space" else ord(x[0])))
 
         for character in charToCode:
-            if character == " ":
-                print("space", "\t", charToCode[character])
-            elif ord(character) == 10:
-                print("\\n", "\t", charToCode[character])
-            elif ord(character) == 9:
-                print("tab", "\t", charToCode[character])
-            else:
-                print(character, "\t", charToCode[character])
+           print(character, "\t", charToCode[character])
 
 if __name__ == "__main__":
 

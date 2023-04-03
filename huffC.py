@@ -21,13 +21,6 @@ def getDictionary(filepath):
         splitLine = line.split(" ")
         character = splitLine[0]
         binaryCode = splitLine[-1].strip()
-
-        if character == "space":
-            character = " "
-        if character == "\\n":
-            character = str(chr(10))
-        if character == "tab":
-            character = str(chr(9))
         #Add the character and binary code to the dictionary
         dictionary[character] = binaryCode
     
@@ -47,8 +40,39 @@ def compressFile(filepath, dictionary):
     #Encode the file
     for character in text:
         #Exclude non-printable characters
-        if ord(character) < 32 or ord(character) > 126:
-            continue
+        if ord(character) < 33 or ord(character) > 126:
+            match ord(character):
+                case 32:
+                    character = "space"
+                case 9:
+                    character = "tab"
+                case 10:
+                    character = "\\n"
+                case 8217:
+                    character = "'"
+                case 8216:
+                    character = "'"
+                case 8211:
+                    character = "-"
+                case 8220:
+                    character = '"'
+                case 8221:
+                    character = '"'
+                case 8212:
+                    character = "-"
+                case 250:
+                    character = "u"
+                case 233:
+                    character = "e"
+                case 237:
+                    character = "i"
+                case 243:
+                    character = "o"
+                case 225:
+                    character = "a"
+                case _:
+                    continue
+
 
         #Get the binary code for the character
         binaryCode = dictionary[character]
