@@ -3,6 +3,9 @@ from huffCode import HuffmanCoding as hc
 import os
 import sys
 
+PRINTABLE_ORDS = [9, 10]
+PRINTABLE_ORDS.extend(range(32, 127))
+
 def countDigrams(texts: list) -> Counter:
     """
     @param
@@ -18,19 +21,54 @@ def countDigrams(texts: list) -> Counter:
     for text in texts:
         for i in range(len(text) - 1): # note the len(text) - 1 to avoid trying to access an out of bounds digram
             d = text[i:i+2]
-            if isPrintable(d):
-                diFreqs[d] += 1
-
+            diFreqs[stringToPrintable(d)] += 1
     return diFreqs
 
-def isPrintable(text) -> bool:
+def stringToPrintable(text) -> str:
     """
-    Determines if a text contains only printable characters.
+    Converts a string to a 'printable' string
     """
+    s = []
     for c in text:
-        if ord(c) < 32 or ord(c) > 126:
-            return False
-    return True
+        d = charToPrintable(c)
+        s.append(d)
+    return ''.join(s)
+
+def charToPrintable(c) -> str:
+    """
+    
+    """
+    if ord(c) < 32 or ord(c) > 126:
+        match ord(c):
+            case 9:
+                c = "tab"
+            case 10:
+                c = "newline"
+            case 8217:
+                c = "'"
+            case 8216:
+                c = "'"
+            case 8211:
+                c = "-"
+            case 8220:
+                c = '"'
+            case 8221:
+                c = '"'
+            case 8212:
+                c = "-"
+            case 250:
+                c = "u"
+            case 233:
+                c = "e"
+            case 237:
+                c = "i"
+            case 243:
+                c = "o"
+            case 225:
+                c = "a"
+            case _:
+                c = "@"
+    return c
 
 def computeCodeArray(n : int, texts: list) -> list:
     """
@@ -42,30 +80,30 @@ def computeCodeArray(n : int, texts: list) -> list:
 
     Computes a codeArray structured as follows:
     First 96 entries: printable unigrams
-    Rest of the entries: most common n - 96 digrams in ascending order
+    Rest of the entries: most common n - k (where k is the len(PRINTABLE_ORDS)) digrams in ascending order
 
     Note that we return a list instead of a dictionary for our code because all codewords are the same length. As such, we can compute the appropriate binary codeword with an index and the number of entries in the code.
     """
 
-    if n < 96:
-        raise Exception("Code must be at least n=96 entries long!")
+    k = len(PRINTABLE_ORDS)
 
-    codeArray = [] # unigrams/digrams are indexed by binary symbols
-    for i in range(96):
-        printableUnigram = i + 32
-        codeArray.append(chr(printableUnigram))
+    if n < k:
+        raise Exception(f"Code must be at least n={k} entries long!")
 
-    if n == 96:
+    codeArray = [] # unigrams/digrams are indexed by binary codewords
+    for p in PRINTABLE_ORDS:
+        codeArray.append(charToPrintable(chr(p)))
+    if n == k:
         return codeArray
     
-    numOfDigrams = n - 96 # number of digrams we would LIKE in our alphabet
+    numOfDigrams = n - k # number of digrams we would LIKE in our alphabet
     commonDigramsTuples = countDigrams(texts).most_common(numOfDigrams)
     # note that there might not be enough digrams to fill out all n entries of code!
-    # In this case, len(commonDigramTuples) < n- 96 and we return a shorter code.
+    # In this case, len(commonDigramTuples) < n - k and we return a shorter code.
 
     commonDigrams = sorted([dt[0] for dt in commonDigramsTuples])
     for cd in commonDigrams:
-        codeArray.append(cd)
+        codeArray.append(stringToPrintable(cd))
     return codeArray
 
 def bitsRequired(n : int):
@@ -101,8 +139,9 @@ if __name__ == "__main__":
             sys.exit(1)
 
     n = int(sys.argv[1])
-    if n < 96:
-        print("Number of entries in dictionary must be >= 96")
+    k = len(PRINTABLE_ORDS)
+    if n < k:
+        print(f"Number of entries in dictionary must be >= {k}")
         sys.exit(1)
     
     texts = hc.importFiles(sys.argv[2])
@@ -125,6 +164,3 @@ if __name__ == "__main__":
         print(f"WARNING: not enough digrams to construct a {n}-element code.\n")
     if codeFile:
         print(f"Output written on digrCodes/digrCode{m}.txt")
-    
- 
-    

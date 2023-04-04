@@ -9,7 +9,7 @@ class CodeDoubleMap:
     def __init__(self, codeArray: list):
         """
         @param
-        codeArray : list -> code in list form (each entry is a symbol, indices of list represent codewords.
+        codeArray : list -> code in list form (each entry is a symbol, indices of list represent codewimpos.
 
         Constructs reverseMap (symbols -> int codewords) from codeArray.
         """
@@ -46,51 +46,52 @@ class DigramCompression:
         sizes = [256, 512, 1024]
         if codeSize not in sizes:
             raise Exception("Code sizes other than 256, 512, 1024 are not supported")
+        self.codeSize = codeSize
         codeFilenameWithPath = f"digrCodes/digrCode{codeSize}.txt"
         codeArray = self.read_code(codeFilenameWithPath)
         if not codeArray:
             raise Exception(f"{codeFilenameWithPath} not found. Use 'digrcode.py' to construct code.")
         self.cdm = CodeDoubleMap(codeArray)
 
-    def compressAndWrite(self, filename : str, path : str):
+    def compressAndWrite(self, filepath : str):
         """
         @param
-        filename -> ONLY filename, no path
-        path -> path to file
+        filepath -> includes filename and its path
 
         Calls digr_encoder() to compress a file and write it to a binary file
         """
 
-        fileToCompress = open(f'{path}{filename}', "r")
+        fileToCompress = open(f'{filepath}', "r")
         text = fileToCompress.read()
-        # main call
-        encodedBits = self.digr_encoder(text, self.cdm)
+        encodedBits = self.digr_encoder(text, self.cdm) # main call
         
-        if not os.path.exists('encodings'):
-            os.makedirs('encodings')
-            print("Created directory './encodings/'")
-        binFileName = f'encodings/{filename}.digr'
+        filename = filepath.split("/")[-1]
+        encodingDir = f'encodings/digr{self.codeSize}'
+        if not os.path.exists(encodingDir):
+            os.makedirs(encodingDir)
+            print(f"Created directory './{encodingDir}'")
+        binFileName = f'{encodingDir}/{filename}.digr{self.codeSize}'
         with open(binFileName, 'wb') as binaryFile:
             encodedBits.tofile(binaryFile)
         print(f"Compressed file written to {binFileName}")
 
-    def decompressAndWrite(self, filename: str, path: str):
+    def decompressAndWrite(self, filepath: str):
         """
         @param
-        filename -> ONLY filename, no path
-        path -> path to file
+        filepath -> includes filename and its path
 
         Calls digr_encoder() to decompress a binary file and write it to a text file
         """
-        compressedFile = open(f'{path}{filename}.digr', "rb")
+        compressedFile = open(f'{filepath}.digr{self.codeSize}', "rb")
         bitString = bs.Bits(compressedFile)
-        # main call
-        decodedText = self.digr_decoder(bitString , self.cdm)
+        decodedText = self.digr_decoder(bitString , self.cdm) # main call
 
-        if not os.path.exists('decodings'):
-            os.makedirs('decodings')
-            print("Created directory './decodings/'")
-        decompressedFilename = f'decodings/{filename}'
+        filename = filepath.split("/")[-1]
+        decodingDir = f'decodings/digr{self.codeSize}'
+        if not os.path.exists(decodingDir):
+            os.makedirs(decodingDir)
+            print(f"Created directory './{decodingDir}'")
+        decompressedFilename = f'{decodingDir}/{filename}'
         with open(decompressedFilename, 'w') as decompressedFile:
             decompressedFile.write(decodedText)
         print(f"Decompressed file written to {decompressedFilename}")
@@ -148,10 +149,10 @@ class DigramCompression:
             decodedMsg.append(cdm.getSymbol(intCodeword))
         return ''.join(decodedMsg)
     
-    def read_code(self, filenameWithPath):
+    def read_code(self, filepath):
         """
         @param
-        filenameWithPath : list -> must end with '.digr'
+        filepath : list -> must end with '.digr'
         @return
         codeArray : list -> if codeFile is found
         None ->  otherwise
@@ -162,12 +163,20 @@ class DigramCompression:
         """
         try:
             codeArray = []
-            f = open(filenameWithPath, 'r')
+            f = open(filepath, 'r')
             for line in f:
                 symbolAndNewline = line.split('\t')[1]
                 symbol = symbolAndNewline[0:len(symbolAndNewline)-1]
-                codeArray.append(symbol)
+                codeArray.append(processSymbol(symbol))
             return codeArray
         except FileNotFoundError:
             return None
+        
+def processSymbol(symbol: str):
+    if len(symbol) > 2:
+        if "tab" in symbol:
+            symbol = symbol.replace("tab", "\t")
+        if "newline" in symbol:
+            symbol = symbol.replace("newline", "\n")
+    return symbol
     
