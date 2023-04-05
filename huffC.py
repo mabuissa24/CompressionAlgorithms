@@ -2,7 +2,7 @@
 
 
 import sys
-
+import bitstring as bs
 
 def getDictionary(filepath):
     #The syntax of the dictionary file is as follows:
@@ -36,7 +36,7 @@ def compressFile(filepath, dictionary):
     #Create a binary file
     file = open("./encodings/huff/" + filename+ ".huff", "wb")
 
-
+    bits = []
     #Encode the file
     for character in text:
         #Exclude non-printable characters
@@ -77,14 +77,14 @@ def compressFile(filepath, dictionary):
         #Get the binary code for the character
         binaryCode = dictionary[character]
 
-        #Convert the binary code to a sequence of bits
-        bits = []
-        for bit in binaryCode:
-            bits.append(int(bit))
-        
-        #Write the bits to the file
-        for bit in bits:
-            file.write(bit.to_bytes(1, byteorder='big'))
+        #Add the binary code to the list of bits
+        bits.append(binaryCode)
+    
+    #Use the bitstring library to convert the list of bits to a byte array
+    bits = "".join(bits)
+    bits = bs.BitArray(bin=bits)
+    file.write(bits.tobytes())
+    
         
 
     file.close()

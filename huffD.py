@@ -2,6 +2,7 @@
 
 import os
 import sys
+import bitstring as bs
 
 
 def getDictionary(filepath):
@@ -36,7 +37,8 @@ def getDictionary(filepath):
 def decodeFile(dictionary, filepath):
     #Open the file
     file = open(filepath, "rb")
-    binaryCode = file.read()
+    #Using the bitstring library, read the file as a byte array
+    binaryCode = bs.BitArray(file.read()).bin
     file.close()
 
     #Decode the file
@@ -44,17 +46,16 @@ def decodeFile(dictionary, filepath):
     currentCharacter = ""
     for bit in binaryCode:
         #Convert the bit to a string
-        bit = str(bit)
+        bitString = str(bit)
         #Add the bit to the current character
-        currentCharacter += bit
-        #Check if the current character is in the dictionary
+        currentCharacter += bitString
+        #If the current character is in the dictionary, add it to the text
         if currentCharacter in dictionary:
-            #Get the character from the dictionary
-            character = dictionary[currentCharacter]
-            #Add the character to the text
-            text.append(character)
-            #Reset the current character
+            text.append(dictionary[currentCharacter])
             currentCharacter = ""
+        
+    
+
         
     #Convert the list of characters to a string
     text = "".join(text)
