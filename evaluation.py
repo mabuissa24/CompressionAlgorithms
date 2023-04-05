@@ -2,7 +2,7 @@ import os
 import sys
 import time
 
-Algorithms = ["huff"]
+Algorithms = ["huff", "digr256", "digr512", "digr1024"]
 
 def evaluate():
     books = os.listdir("./books/")

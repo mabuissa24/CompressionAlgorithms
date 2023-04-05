@@ -82,11 +82,13 @@ class DigramCompression:
 
         Calls digr_encoder() to decompress a binary file and write it to a text file
         """
-        compressedFile = open(f'{filepath}.digr{self.codeSize}', "rb")
+        # compressedFile = open(f'{filepath}.digr{self.codeSize}', "rb")
+        compressedFile = open(f'{filepath}', "rb")
         bitString = bs.Bits(compressedFile)
         decodedText = self.digr_decoder(bitString , self.cdm) # main call
 
         filename = filepath.split("/")[-1]
+        filename = filename.replace(f".digr{self.codeSize}", "")
         decodingDir = f'decodings/digr{self.codeSize}'
         if not os.path.exists(decodingDir):
             os.makedirs(decodingDir)
