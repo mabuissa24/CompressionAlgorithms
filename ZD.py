@@ -18,32 +18,49 @@ def decode(dictionary, text):
         exit(1)
     original = dictionary[index]
     next_entry = original
+    if next_entry not in dictionary.values():
+        print(f"Something broke. The first entry: {next_entry} was not in the original dictionary: {dictionary}")
+        exit(1)
     i = num_bits
     print(f"original is {original}")
 
     # Iterate through the characters in the file and decode them
     while i < len(text):
-        print(dictionary)
         index = int(text[i:i + num_bits], 2)
-        print(f"index is {index}")
+        # print(f"index is {index}")
         if index not in dictionary:
             print("Special case. To be implemented")
             exit(1)
         letters = dictionary[index]
         original += letters
-        for j in range(len(letters)):
+        # Go through the letters to construct the next entry
+        for letter in letters:
+            next_entry += letter
+            # We found the end of the next entry to be added to the dict
             if next_entry not in dictionary.values():
                 dictionary[dict_ind] = next_entry
                 dict_ind += 1
-                if len(letters) == j + 1:
-                    next_entry = ""
-                else:
-                    leftover = letters[j + 1:]
-                    next_entry = leftover[0]
-                    backlog = leftover[1:]
-                break
+                print(dictionary)
+                # Check our dictionary size at each dictionary element added
+                if dict_ind + 1 >= math.pow(2, num_bits):
+                    print("increasing num_bits")
+                    num_bits += 1
+                # We start the next entry with the last letter of the entry we just added
+                next_entry = letter
 
-            next_entry += letters[j]
+        # for j in range(len(letters)):
+        #     if next_entry not in dictionary.values():
+        #         dictionary[dict_ind] = next_entry
+        #         dict_ind += 1
+        #         if len(letters) == j + 1:
+        #             next_entry = ""
+        #         else:
+        #             leftover = letters[j + 1:]
+        #             next_entry = leftover[0]
+        #             backlog = leftover[1:]
+        #         break
+        #
+        #     next_entry += letters[j]
 
         # print(dictionary)
         # print(dict_ind)
@@ -51,9 +68,7 @@ def decode(dictionary, text):
         i = i + num_bits
         print(f"original is {original}")
 
-        if dict_ind >= math.pow(2, num_bits):
-            print("increasing num_bits")
-            num_bits += 1
+
         # binary_code, j = ZC.find_codeword(dictionary, dict_ind, num_bits, i, text)
         # TODO: Once we reach 16 bits, stop adding, flush dictionary and send code 0 if it compression rate too low
         # If dict_ind goes above 2^num_bits, update numbits

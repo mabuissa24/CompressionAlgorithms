@@ -33,11 +33,18 @@ def test_decode(algo):
         case "Z":
             encode_dictionary = {" ": 1, "a": 2, "b": 3, "o": 4, "w": 5}
             decode_dictionary = {1: " ", 2: "a", 3: "b", 4: "o", 5: "w"}
+            # Short string
             unencoded = "waw"
             encoded = ZC.encode(encode_dictionary.copy(), unencoded)
             decoded = ZD.decode(decode_dictionary.copy(), encoded)
-            # print(f"decoded is {decoded} and unencoded is {unencoded}")
             assert decoded == unencoded, f"Decoded {decoded} instead of {unencoded}"
+            # Longer string
+            unencoded = "wabba"
+            encoded = ZC.encode(encode_dictionary.copy(), unencoded)
+            decoded = ZD.decode(decode_dictionary.copy(), encoded)
+            assert decoded == unencoded, f"Decoded {decoded} instead of {unencoded}"
+
+
         case "digrXXX":
             encoded = None
         case "huff":
