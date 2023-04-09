@@ -11,39 +11,39 @@ def decode(dictionary, text):
     dict_ind = len(dictionary) + 1
     num_bits = math.ceil(math.log(dict_ind, 2))
 
-    # Decode the first letter to build upon to make the dictionary
-    index = int(text[0:num_bits], 2)
-    if index not in dictionary:
-        print(f"Something broke. Index {index} wasn't in dictionary")
-        exit(1)
-    original = dictionary[index]
-    next_entry = original
-    if next_entry not in dictionary.values():
-        print(f"Something broke. The first entry: {next_entry} was not in the original dictionary")
-        exit(1)
-    i = num_bits
+    i = 0
+    original = ""
+    next_entry = ""
 
     # Iterate through the characters in the file and decode them
     while i < len(text):
+        flag = False
         index = int(text[i:i + num_bits], 2)
         i = i + num_bits
         if index not in dictionary:
-            print("Special case. To be implemented")
-            exit(1)
-        letters = dictionary[index]
+            if index != dict_ind:
+                print(f"Something went wrong. Hit special case with index {index} while dict is at index {dict_ind}.")
+                exit(1)
+            flag = True
+            letters = next_entry
+        else:
+            letters = dictionary[index]
         original += letters
         # Go through the letters to construct the next entry
         for letter in letters:
             next_entry += letter
             # We found the end of the next entry to be added to the dict
             if next_entry not in dictionary.values():
+                if flag:
+                    original += next_entry[len(letters):]
                 dictionary[dict_ind] = next_entry
                 dict_ind += 1
-                # Check our dictionary size at each dictionary element added
-                if dict_ind + 1 >= math.pow(2, num_bits):
-                    num_bits += 1
+
                 # We start the next entry with the last letter of the entry we just added
                 next_entry = letter
+            # Check our dictionary size at each dictionary element added
+            if dict_ind + 1 >= math.pow(2, num_bits):
+                num_bits += 1
 
 
         # binary_code, j = ZC.find_codeword(dictionary, dict_ind, num_bits, i, text)

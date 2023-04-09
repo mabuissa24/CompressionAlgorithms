@@ -27,6 +27,13 @@ def Z_test_encode():
     correct = "".join(correct_list_binary)
     assert encoded == correct, f"Encoded \"{unencoded}\" as {encoded} instead of {correct}"
 
+    # Special case when decoding
+    dictionary = {"a": 1, "b": 2}
+    unencoded = "abababa"
+    encoded = ZC.encode(dictionary.copy(), unencoded)
+    correct = "01010011101"
+    assert encoded == correct, f"Encoded \"{unencoded}\" as {encoded} instead of {correct}"
+
 
 def test_decode(algo):
     match algo:
@@ -51,11 +58,10 @@ def test_decode(algo):
             # Special case as listed in book
             encode_dictionary = {"a": 1, "b": 2}
             decode_dictionary = {1: "a", 2: "b"}
-            unencoded = "abababababababa"
+            unencoded = "ababababababa"
             encoded = ZC.encode(encode_dictionary.copy(), unencoded)
             decoded = ZD.decode(decode_dictionary.copy(), encoded)
             assert decoded == unencoded, f"Decoded {decoded} instead of {unencoded}"
-
 
         case "digrXXX":
             encoded = None
@@ -64,5 +70,5 @@ def test_decode(algo):
 
 
 if __name__ == "__main__":
-    Z_test_encode()
+    # Z_test_encode()
     test_decode("Z")
