@@ -19,15 +19,14 @@ def decode(dictionary, text):
     original = dictionary[index]
     next_entry = original
     if next_entry not in dictionary.values():
-        print(f"Something broke. The first entry: {next_entry} was not in the original dictionary: {dictionary}")
+        print(f"Something broke. The first entry: {next_entry} was not in the original dictionary")
         exit(1)
     i = num_bits
-    print(f"original is {original}")
 
     # Iterate through the characters in the file and decode them
     while i < len(text):
         index = int(text[i:i + num_bits], 2)
-        # print(f"index is {index}")
+        i = i + num_bits
         if index not in dictionary:
             print("Special case. To be implemented")
             exit(1)
@@ -40,33 +39,11 @@ def decode(dictionary, text):
             if next_entry not in dictionary.values():
                 dictionary[dict_ind] = next_entry
                 dict_ind += 1
-                print(dictionary)
                 # Check our dictionary size at each dictionary element added
                 if dict_ind + 1 >= math.pow(2, num_bits):
-                    print("increasing num_bits")
                     num_bits += 1
                 # We start the next entry with the last letter of the entry we just added
                 next_entry = letter
-
-        # for j in range(len(letters)):
-        #     if next_entry not in dictionary.values():
-        #         dictionary[dict_ind] = next_entry
-        #         dict_ind += 1
-        #         if len(letters) == j + 1:
-        #             next_entry = ""
-        #         else:
-        #             leftover = letters[j + 1:]
-        #             next_entry = leftover[0]
-        #             backlog = leftover[1:]
-        #         break
-        #
-        #     next_entry += letters[j]
-
-        # print(dictionary)
-        # print(dict_ind)
-        # print(dictionary[dict_ind])
-        i = i + num_bits
-        print(f"original is {original}")
 
 
         # binary_code, j = ZC.find_codeword(dictionary, dict_ind, num_bits, i, text)
@@ -96,4 +73,3 @@ if __name__ == "__main__":
 
     path = sys.argv[1]
     main(path)
-    print("To be implemented")
