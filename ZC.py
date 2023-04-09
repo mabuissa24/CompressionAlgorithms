@@ -9,24 +9,37 @@ import sys
 
 
 def encode(dictionary, text):
+    utf_dict = {"’".encode('utf-8'): "'", "“".encode('utf-8'): '"', "á".encode('utf-8'): 'a',
+                "é".encode('utf-8'): "e", "ó".encode('utf-8'): "o", "—".encode('utf-8'): "-",
+                "‘".encode('utf-8'): "'", "”".encode('utf-8'): '"', "í".encode('utf-8'): "i"}
     # Initialize dict_ind to size of dictionary, start with codes of minimum possible size
     dict_ind = len(dictionary) + 1
     num_bits = math.ceil(math.log(dict_ind, 2))
     # Iterate through the characters in the file and encode them
     i = 0
     code = ""
+    flag = False
     while i < len(text):
         # Look for the longest string of characters already in dictionary
         string = text[i]
+        if string in utf_dict:
+            string = utf_dict[string]
+        elif string not in dictionary:
+            string = "*"
         j = i + 1
         while j < len(text):
-            new_string = string + text[j]
+            char = text[j]
+            if char in utf_dict:
+                char = utf_dict[text[j]]
+            elif char not in dictionary:
+                char = "*"
+            new_string = string + char
             # If new string is already in the dictionary, update the string to continue searching
             if new_string in dictionary:
                 string = new_string
                 j += 1
             # Once we find something not in the dictionary, add it to dictionary and break
-            else:
+            elif not flag:
                 dictionary[new_string] = dict_ind
                 dict_ind += 1
                 break
@@ -41,16 +54,32 @@ def encode(dictionary, text):
 
         # If dict_ind goes above 2^num_bits, update numbits
         if dict_ind >= math.pow(2, num_bits):
-            num_bits += 1
+            # Once we finish 16 bits, stop adding, flush dictionary and send code 0 if compression rate too low
+            if num_bits == 16:
+                flag = True
+            else:
+                num_bits += 1
 
-        # TODO: Once we reach 16 bits, stop adding, flush dictionary and send code 0 if it compression rate too low
+        if flag:
+            # Calculate compression ratio
+            ratio = len(string) / 8
 
     return code
 
 
+def new_dict():
+    dictionary = {chr(i): i - 31 for i in range(32, 128)}
+    index = len(dictionary) + 1
+    chars = ["\n", "\t"]
+    for char in chars:
+        dictionary[char] = index
+        index += 1
+    return dictionary
+
+
 def main(filename):
     # Dictionary starts with 96 ASCII characters, represented by 7 bits
-    dictionary = {chr(i): i - 31 for i in range(32, 128)}
+    dictionary = new_dict()
 
     # Read the file as one string
     with open("" + filename, "r", encoding='utf-8') as f:

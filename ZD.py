@@ -20,7 +20,11 @@ def decode(dictionary, text):
         flag = False
         index = int(text[i:i + num_bits], 2)
         i = i + num_bits
-        if index not in dictionary:
+        if index == 0:
+            dictionary = new_dict()
+            dict_ind = len(dictionary) + 1
+            num_bits = math.ceil(math.log(dict_ind, 2))
+        elif index not in dictionary:
             if index != dict_ind:
                 print(f"Something went wrong. Hit special case with index {index} while dict is at index {dict_ind}.")
                 exit(1)
@@ -46,16 +50,23 @@ def decode(dictionary, text):
                 num_bits += 1
 
 
-        # binary_code, j = ZC.find_codeword(dictionary, dict_ind, num_bits, i, text)
         # TODO: Once we reach 16 bits, stop adding, flush dictionary and send code 0 if it compression rate too low
-        # If dict_ind goes above 2^num_bits, update numbits
 
     return original
 
 
+def new_dict():
+    dictionary = {i - 31: chr(i) for i in range(32, 128)}
+    index = len(dictionary) + 1
+    chars = ["\n", "\t"]
+    for char in chars:
+        dictionary[index] = char
+        index += 1
+    return dictionary
+
 def main(filename):
     # Dictionary starts with 96 ASCII characters, represented by 7 bits
-    dictionary = {i - 31: chr(i) for i in range(32, 128)}
+    dictionary = new_dict()
 
     # Read the file as one string
     with open("" + filename, "r", encoding='utf-8') as f:
