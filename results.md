@@ -1,5 +1,13 @@
 # Results
 
+Huffman encoding and the Digram codes both have a roughly 0.566 compression ratio
+on average throughout the books. LZW has a better ratio, at roughly 0.4 on average,
+and even better in the larger files. The encoding times are low across all version, 
+although slightly higher for Digram encodings. In terms of decompression time, 
+however, Huffman dominates and Digram does similarly well, with LZW taking substantially 
+longer to decode. This is likely due to the fact that the LZW dictionary is built *while* 
+decoding, rather than in advance as the other algorithms do. 
+
 ## Compression Ratio
 
 |Book|huff|digr256|digr512|digr1024|Z|
