@@ -7,10 +7,8 @@ import sys
 
 
 def decode(dictionary, text):
-    # print(dictionary)
-    # print(len(dictionary))
-    dict_copy = dictionary.copy()
     # Initialize dict_ind to size of dictionary, start with minimum code size
+    dict_copy = dictionary.copy()
     dict_ind = len(dictionary) + 2
     num_bits = math.ceil(math.log(dict_ind, 2))
 
@@ -18,16 +16,11 @@ def decode(dictionary, text):
     original = ""
     next_entry = ""
 
-    received = []
-
     # Iterate through the characters in the file and decode them
     while i < len(text):
 
         flag = False
         index = int(text[i:i + num_bits], 2)
-        # print(f"ZD dictionary is {dictionary} with index {index}")
-        # print(f"{index}:{dict_ind}:{num_bits}")
-        received.append(f"{index}:{dict_ind}:{num_bits}")
         i = i + num_bits
         if index == 0:
             dictionary = dict_copy.copy()
@@ -43,7 +36,6 @@ def decode(dictionary, text):
             if index != dict_ind:
                 print(f"Something went wrong. Hit special case with index {index} of dict index {dict_ind} "
                       f"while text is at index {i} of {len(text)}.")
-                # exit(1)
             flag = True
             letters = next_entry
         else:
@@ -54,7 +46,6 @@ def decode(dictionary, text):
         while j < len(letters):
             letter = letters[j]
             next_entry += letter
-            # print(f"from index {index}, letters is {letters} and next_entry is {next_entry} at ind {dict_ind}")
             # We found the end of the next entry to be added to the dict
             if next_entry not in dictionary.values():
                 dictionary[dict_ind] = next_entry
@@ -62,7 +53,6 @@ def decode(dictionary, text):
                 if flag:
                     original += next_entry[len(letters):]
                     letters = next_entry
-                    # print(f"added {next_entry[len(letters):]} to {original}")
                     next_entry = letters[j]
 
                 # We start the next entry with the last letter of the entry we just added
@@ -70,12 +60,7 @@ def decode(dictionary, text):
                     next_entry = letter
             j += 1
 
-    # print(received)
-    # print(dictionary)
-    # print(len(dictionary))
-
-    # print(f"ZD dictionary is {dictionary}")
-    return original  # TODO: Fix book issue still
+    return original
 
 
 def new_dict():
@@ -109,5 +94,5 @@ if __name__ == "__main__":
     path = sys.argv[1]
     decoded = main(path)
 
-    with open(sys.argv[1].split("/")[-1].removesuffix(".Z"), "w") as f:
+    with open("decodings/Z/" + sys.argv[1].split("/")[-1].removesuffix(".Z"), "w") as f:
         f.write(decoded)

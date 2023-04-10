@@ -10,9 +10,7 @@ import sys
 
 def encode(dictionary, text):
     dict_copy = dictionary.copy()
-    # print(dictionary)
-    # print(len(dictionary))
-    transmitted = []
+
     utf_dict = {"’".encode('utf-8'): "'", "“".encode('utf-8'): '"', "á".encode('utf-8'): 'a',
                 "é".encode('utf-8'): "e", "ó".encode('utf-8'): "o", "—".encode('utf-8'): "-",
                 "‘".encode('utf-8'): "'", "”".encode('utf-8'): '"', "í".encode('utf-8'): "i"}
@@ -62,13 +60,10 @@ def encode(dictionary, text):
             else:
                 break
 
-
-
         # Add index from dictionary to the code, represented by correct number of bits
         ind = dictionary[string]
         binary_code = format(ind, "b").zfill(num_bits)
         code += binary_code
-        transmitted.append(f"{ind}:{dict_ind}:{num_bits}")
 
         if flag:
             # Calculate compression ratio
@@ -84,10 +79,7 @@ def encode(dictionary, text):
 
         # Update i to point to the last not encoded letter
         i = j
-    print(transmitted)
 
-    print(dictionary)
-    print(len(dictionary))
     return code
 
 
@@ -120,7 +112,8 @@ if __name__ == "__main__":
         sys.exit(1)
 
     path = sys.argv[1]
+    name = path.split("/")[-1]
     encoded = main(path)
     # opening the file in write only mode
-    with open(sys.argv[1] + ".Z", "w") as f:
+    with open("./encodings/Z/" + name + ".Z", "w") as f:
         f.write(encoded)
