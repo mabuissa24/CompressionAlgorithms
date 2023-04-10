@@ -39,6 +39,7 @@ def decode(dictionary, text):
             num_bits += 1
             continue
         elif index not in dictionary:
+            print(f"special case at {index}")
             if index != dict_ind:
                 print(f"Something went wrong. Hit special case with index {index} of dict index {dict_ind} "
                       f"while text is at index {i} of {len(text)}.")
@@ -49,25 +50,32 @@ def decode(dictionary, text):
             letters = dictionary[index]
         original += letters
         # Go through the letters to construct the next entry
+
         for letter in letters:
             next_entry += letter
+            print(f"letters is {letters} and next_entry is {next_entry} at ind {dict_ind}")
             # We found the end of the next entry to be added to the dict
             if next_entry not in dictionary.values():
-                if flag:
-                    original += next_entry[len(letters):]
                 dictionary[dict_ind] = next_entry
                 dict_ind += 1
+                if flag:
+                    original += next_entry[len(letters):]
+                    # letters += next_entry[len(letters):]
+                    print(f"added {next_entry[len(letters):]} to {original}")
+                    next_entry = next_entry[len(next_entry) - 1]
+
 
                 # We start the next entry with the last letter of the entry we just added
-                next_entry = letter
+                else:
+                    next_entry = letter
 
-
+    print(received)
     print(dictionary)
     print(len(dictionary))
-    print(received)
 
     # print(f"ZD dictionary is {dictionary}")
-    return original
+    return original  # TODO: They don't make the same dictionaries currently.
+    # Specifically, in the special case, they don't create the correct NEXT entry (see 102 and 103 in tester.py)
 
 
 def new_dict():
