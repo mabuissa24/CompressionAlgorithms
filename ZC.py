@@ -6,6 +6,7 @@
 # a certain threshold it'll flush the dictionary and rebuild it
 import math
 import sys
+import bitstring as bs
 
 
 def encode(dictionary, text):
@@ -114,6 +115,11 @@ if __name__ == "__main__":
     path = sys.argv[1]
     name = path.split("/")[-1]
     encoded = main(path)
-    # opening the file in write only mode
-    with open("./encodings/Z/" + name + ".Z", "w") as f:
-        f.write(encoded)
+
+    #Translate the encoded string into a bitstring
+    bitstring = bs.BitArray(bin=encoded)
+
+    # Write the bitstring to a file
+    with open("./encodings/Z/" + name + ".Z", "wb") as f:
+        bitstring.tofile(f)
+    

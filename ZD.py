@@ -4,6 +4,7 @@
 # increment this length everytime the dictionary is at max capacity
 import math
 import sys
+import bitstring as bs
 
 
 def decode(dictionary, text):
@@ -83,13 +84,12 @@ def main(filename):
     # Dictionary starts with 96 ASCII characters, represented by 7 bits
     dictionary = new_dict()
 
-    # Read the file as one string
-    with open("" + filename, "r", encoding='utf-8') as f:
-        text = f.read()
+    # Read the bitstring as one string
+    binary = open(filename, "rb").read()
+    binary = bs.BitArray(binary).bin
 
     # Return the decoded version of text
-    return decode(dictionary, text)
-
+    return decode(dictionary, binary)
 
 if __name__ == "__main__":
 
