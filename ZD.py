@@ -22,6 +22,7 @@ def decode(dictionary, text):
         flag = False
         index = int(text[i:i + num_bits], 2)
         i = i + num_bits
+
         if index == 0:
             dictionary = dict_copy.copy()
             dict_ind = len(dictionary) + 2
@@ -41,6 +42,11 @@ def decode(dictionary, text):
         else:
             letters = dictionary[index]
         original += letters
+
+        # If our dictionary is full we don't need to add more elements
+        if dict_ind >= math.pow(2, num_bits):
+            continue
+
         # Go through the letters to construct the next entry
         j = 0
         while j < len(letters):
