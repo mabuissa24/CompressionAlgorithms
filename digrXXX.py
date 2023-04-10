@@ -61,7 +61,7 @@ class DigramCompression:
         Calls digr_encoder() to compress a file and write it to a binary file
         """
 
-        fileToCompress = open(f'{filepath}', "r")
+        fileToCompress = open(f'{filepath}', "r", encoding='utf-8')
         text = fileToCompress.read()
         encodedBits = self.digr_encoder(text, self.cdm) # main call
         
@@ -94,7 +94,7 @@ class DigramCompression:
             os.makedirs(decodingDir)
             print(f"Created directory './{decodingDir}'")
         decompressedFilename = f'{decodingDir}/{filename}'
-        with open(decompressedFilename, 'w') as decompressedFile:
+        with open(decompressedFilename, 'w', encoding="utf-8") as decompressedFile:
             decompressedFile.write(decodedText)
         print(f"Decompressed file written to {decompressedFilename}")
 
