@@ -45,7 +45,7 @@ def decode(dictionary, text):
         original += letters
 
         # If our dictionary is full we don't need to add more elements
-        if dict_ind >= math.pow(2, num_bits):
+        if dict_ind >= math.pow(2, 16):
             continue
 
         # Go through the letters to construct the next entry
