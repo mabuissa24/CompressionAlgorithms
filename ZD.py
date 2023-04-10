@@ -28,6 +28,7 @@ def decode(dictionary, text):
             dictionary = dict_copy.copy()
             dict_ind = len(dictionary) + 2
             num_bits = math.ceil(math.log(dict_ind, 2))
+            next_entry = ""
             continue
         elif index == 1:
             # Check our dictionary size at each dictionary element added

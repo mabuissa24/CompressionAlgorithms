@@ -73,7 +73,7 @@ def encode(dictionary, text):
                 binary_code = format(0, "b").zfill(num_bits)
                 code += binary_code
                 dictionary = dict_copy.copy()
-                dict_ind = len(dictionary) + 1
+                dict_ind = len(dictionary) + 2
                 num_bits = math.ceil(math.log(dict_ind, 2))
                 flag = False
                 continue
