@@ -14,7 +14,7 @@ def decode(dictionary, text):
     num_bits = math.ceil(math.log(dict_ind, 2))
 
     i = 0
-    original = ""
+    original = []
     next_entry = ""
 
     # Iterate through the characters in the file and decode them
@@ -42,10 +42,10 @@ def decode(dictionary, text):
             letters = next_entry
         else:
             letters = dictionary[index]
-        original += letters
+        original.append(letters)
 
         # If our dictionary is full we don't need to add more elements
-        if dict_ind >= math.pow(2, num_bits):
+        if dict_ind >= math.pow(2, 16):
             continue
 
         # Go through the letters to construct the next entry
@@ -58,7 +58,7 @@ def decode(dictionary, text):
                 dictionary[dict_ind] = next_entry
                 dict_ind += 1
                 if flag:
-                    original += next_entry[len(letters):]
+                    original.append(next_entry[len(letters):])
                     letters = next_entry
                     next_entry = letters[j]
 
@@ -67,7 +67,7 @@ def decode(dictionary, text):
                     next_entry = letter
             j += 1
 
-    return original
+    return "".join(original)
 
 
 def new_dict():
