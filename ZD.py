@@ -26,7 +26,7 @@ def decode(dictionary, text):
         flag = False
         index = int(text[i:i + num_bits], 2)
         # print(f"ZD dictionary is {dictionary} with index {index}")
-        print(f"{index}:{dict_ind}:{num_bits}")
+        # print(f"{index}:{dict_ind}:{num_bits}")
         received.append(f"{index}:{dict_ind}:{num_bits}")
         i = i + num_bits
         if index == 0:
@@ -39,7 +39,7 @@ def decode(dictionary, text):
             num_bits += 1
             continue
         elif index not in dictionary:
-            print(f"special case at {index}")
+            # print(f"special case at {index}")
             if index != dict_ind:
                 print(f"Something went wrong. Hit special case with index {index} of dict index {dict_ind} "
                       f"while text is at index {i} of {len(text)}.")
@@ -50,32 +50,32 @@ def decode(dictionary, text):
             letters = dictionary[index]
         original += letters
         # Go through the letters to construct the next entry
-
-        for letter in letters:
+        j = 0
+        while j < len(letters):
+            letter = letters[j]
             next_entry += letter
-            print(f"letters is {letters} and next_entry is {next_entry} at ind {dict_ind}")
+            # print(f"from index {index}, letters is {letters} and next_entry is {next_entry} at ind {dict_ind}")
             # We found the end of the next entry to be added to the dict
             if next_entry not in dictionary.values():
                 dictionary[dict_ind] = next_entry
                 dict_ind += 1
                 if flag:
                     original += next_entry[len(letters):]
-                    # letters += next_entry[len(letters):]
-                    print(f"added {next_entry[len(letters):]} to {original}")
-                    next_entry = next_entry[len(next_entry) - 1]
-
+                    letters = next_entry
+                    # print(f"added {next_entry[len(letters):]} to {original}")
+                    next_entry = letters[j]
 
                 # We start the next entry with the last letter of the entry we just added
                 else:
                     next_entry = letter
+            j += 1
 
-    print(received)
-    print(dictionary)
-    print(len(dictionary))
+    # print(received)
+    # print(dictionary)
+    # print(len(dictionary))
 
     # print(f"ZD dictionary is {dictionary}")
-    return original  # TODO: They don't make the same dictionaries currently.
-    # Specifically, in the special case, they don't create the correct NEXT entry (see 102 and 103 in tester.py)
+    return original  # TODO: Fix book issue still
 
 
 def new_dict():

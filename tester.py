@@ -73,41 +73,41 @@ def test_decode(algo):
             decoded = ZD.decode(decode_dictionary.copy(), encoded)
             print(f"decoded is {decoded}")
             assert decoded == unencoded, f"Decoded {decoded} instead of {unencoded}"
-#
-#             # Issue in book
-#             encode_dictionary = ZC.new_dict()
-#             decode_dictionary = ZD.new_dict()
-#             unencoded = """The Project Gutenberg eBook of Trials of war criminals before the
-# Nuernberg military tribunals under control council law no. 10, by
-# Anonymous
-#
-# This eBook is for the use of anyone anywhere in the United States and
-# most other parts of the world at no cost and with almost no restrictions
-# whatsoever. You may copy it, give it away or re-use it under the terms
-# of the Project Gutenberg License included with this eBook or online at
-# www.gutenberg.org. If you are not located in the United States, you
-# will have to check the laws of the country where you are located before
-# using this eBook.
-#
-# Title: Trials of war criminals before the Nuernberg military tribunals
-#        under control council law no. 10
-#
-# Author: Anonymous
-#
-# Release Date: March 21, 2023 [eBook #70342]
-#
-# Language: English
-#
-# Produced by: Emmanuel Ackerman, Karin Spence and the Online Distributed
-#              Proofreading Team at https://www.pgdp.net (This file was
-#              produced from images generously made available by The
-#              Internet Archive)
-# """
-#
-#             encoded = ZC.encode(encode_dictionary.copy(), unencoded)
-#             decoded = ZD.decode(decode_dictionary.copy(), encoded)
-#             print(f"decoded is {decoded}")
-#             assert decoded == unencoded, f"Decoded {decoded} instead of {unencoded}"
+
+            # Issue in book
+            encode_dictionary = ZC.new_dict()
+            decode_dictionary = ZD.new_dict()
+            unencoded = """The Project Gutenberg eBook of Trials of war criminals before the
+Nuernberg military tribunals under control council law no. 10, by
+Anonymous
+
+This eBook is for the use of anyone anywhere in the United States and
+most other parts of the world at no cost and with almost no restrictions
+whatsoever. You may copy it, give it away or re-use it under the terms
+of the Project Gutenberg License included with this eBook or online at
+www.gutenberg.org. If you are not located in the United States, you
+will have to check the laws of the country where you are located before
+using this eBook.
+
+Title: Trials of war criminals before the Nuernberg military tribunals
+       under control council law no. 10
+
+Author: Anonymous
+
+Release Date: March 21, 2023 [eBook #70342]
+
+Language: English
+
+Produced by: Emmanuel Ackerman, Karin Spence and the Online Distributed
+             Proofreading Team at https://www.pgdp.net (This file was
+             produced from images generously made available by The
+             Internet Archive)
+"""
+
+            encoded = ZC.encode(encode_dictionary.copy(), unencoded)
+            decoded = ZD.decode(decode_dictionary.copy(), encoded)
+            # print(f"decoded is {decoded}")
+            assert decoded == unencoded, f"Decoded {decoded} instead of {unencoded}"
 
         case "digrXXX":
             encoded = None
